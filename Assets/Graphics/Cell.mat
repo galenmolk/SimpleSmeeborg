@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Cell
+  m_Shader: {fileID: 4800000, guid: 7644430ebdd5f4864ab187e2d51858f8, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _EAST_ON
+  - _NORTH_ON
+  - _SOUTH_ON
+  - _WEST_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints:
+    - _East: 1
+    - _North: 1
+    - _South: 1
+    - _West: 1
+    m_Floats:
+    - _East: 1
+    - _North: 1
+    - _South: 1
+    - _WallThickness: 0.023
+    - _West: 1
+    m_Colors:
+    - _FloorColor: {r: 0.6792453, g: 0.6612717, b: 0.60555357, a: 1}
+    - _WallColor: {r: 0.3207547, g: 0.14519665, b: 0.08926664, a: 1}
+  m_BuildTextureStacks: []
