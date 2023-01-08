@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 470055935}
   - component: {fileID: 470055934}
   - component: {fileID: 470055933}
+  - component: {fileID: 470055937}
   m_Layer: 5
   m_Name: MazeCanvas
   m_TagString: Untagged
@@ -225,6 +226,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &470055937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470055932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 772ae65bbbd104454ac8ce6f62a8ad9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OpenMaterial: {fileID: 0}
+  ClosedMaterial: {fileID: 0}
+  start: {fileID: 0}
+  end: {fileID: 0}
+  pathPoint: {fileID: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

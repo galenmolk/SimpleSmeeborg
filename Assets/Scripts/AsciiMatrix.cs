@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace SimpleSmeeborg
 {
+    // Rename to AsciiCharArrays
     public class AsciiMatrix
     {
         private const int PASSABLE = 0;
@@ -23,8 +24,6 @@ namespace SimpleSmeeborg
             AsciiRowCount = rows.Length;
             asciiRowLengths = new int[AsciiRowCount];
 
-            // Assume that each row of characters contains the same length
-            // -- i.e. a rectangular maze in the specified format.
             asciiMatrix = new char[AsciiRowCount][];
 
             for (int rowIndex = 0; rowIndex < AsciiRowCount; rowIndex++)
