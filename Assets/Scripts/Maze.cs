@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace SimpleSmeeborg
 {
@@ -10,9 +11,10 @@ namespace SimpleSmeeborg
 
         public Cell[][] CellArrays { get; private set; }
 
-        private AsciiMatrix asciiMatrix;
+        public int Width { get; private set; }
+        public int Height { get; private set; }
 
-        private int rowCount;
+        private AsciiMaze asciiMatrix;
 
         private readonly List<Vector2Int> cardinalDirections = new List<Vector2Int>()
         {
@@ -24,31 +26,30 @@ namespace SimpleSmeeborg
 
         public void InitializeMaze(string asciiInput)
         {
-            asciiMatrix = new AsciiMatrix(asciiInput);
+            asciiMatrix = new AsciiMaze(asciiInput);
             CreateCellMatrix();
         }
 
         private void CreateCellMatrix()
         {
-            rowCount = GetCellIndexForAscii(asciiMatrix.AsciiRowCount, FormatConsts.CELL_Y_LENGTH);
-            int columnCount = default;
+            Height = GetCellCountFromAscii(asciiMatrix.AsciiRowCount, FormatConsts.CELL_Y_LENGTH);
 
-            CellArrays = new Cell[rowCount][];
+            CellArrays = new Cell[Height][];
 
-            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
+            for (int rowIndex = 0; rowIndex < Height; rowIndex++)
             {
-                columnCount = GetCellIndexForAscii(asciiMatrix.GetRowLength(rowIndex), FormatConsts.CELL_X_LENGTH);
+                Width = GetCellCountFromAscii(asciiMatrix.GetRowLength(rowIndex), FormatConsts.CELL_X_LENGTH);
 
-                CellArrays[rowIndex] = new Cell[columnCount];
+                CellArrays[rowIndex] = new Cell[Width];
 
-                for (int columnIndex = 0; columnIndex < columnCount; columnIndex++)
+                for (int columnIndex = 0; columnIndex < Width; columnIndex++)
                 {
                     CellArrays[rowIndex][columnIndex] = asciiMatrix.MakeCell(rowIndex, columnIndex);
                 }
             }
 
             StartCell = CellArrays[0][0];
-            FinishCell = CellArrays[rowCount - 1][columnCount - 1];
+            FinishCell = CellArrays[Height - 1][Width - 1];
 
             StartCell.SetType(CellType.START);
             FinishCell.SetType(CellType.FINISH);
@@ -58,7 +59,7 @@ namespace SimpleSmeeborg
         {
             List<Cell> neighbors = new List<Cell>();
 
-            Vector2Int cellLocation = origin.Location;
+            Vector2Int cellLocation = origin.Coordinates;
 
             foreach (Vector2Int direction in cardinalDirections)
             {
@@ -82,28 +83,28 @@ namespace SimpleSmeeborg
         {
             cell = null;
 
-            if (position.x < 0f || position.y < 0f)
+            if (position.x < 0 || position.y < 0)
             {
-                Debug.LogError("Cell position must not be less than zero.");
+                Debug.Log($"Cell position {position} must not be less than zero.");
                 return false;
             }
 
-            if (position.y > rowCount - 1)
+            if (position.y > Height - 1)
             {
-                Debug.LogError($"Cell Y position must not be greater than the number of rows {rowCount}.");
+                Debug.Log($"Cell Y position {position} must not be greater than the number of rows {Height}.");
                 return false;
             }
 
-
-            int columnCount = CellArrays[position.x].Length;
+            int columnCount = CellArrays[position.y].Length;
+            Debug.Log($"Column Count for row {position.x}: {columnCount}");
 
             if (position.x > columnCount - 1)
             {
-                Debug.LogError($"Cell X position must not be greater than the number of columns {columnCount}.");
+                Debug.Log($"Cell X position {position} must not be greater than the number of columns {columnCount}.");
                 return false;
             }
 
-            cell = CellArrays[position.x][position.y];
+            cell = CellArrays[position.y][position.x];
             return true;
         }
 
@@ -126,11 +127,11 @@ namespace SimpleSmeeborg
                 return origin.HasEastPassage && neighbor.HasWestPassage;
             }
 
-            Debug.LogError("Neighbor is not in one of the cardinal directions from origin.");
+            Debug.LogError($"Neighbor {neighbor.Coordinates} is not in one of the cardinal directions from origin {origin.Coordinates}.");
             return false;
         }
 
-        private int GetCellIndexForAscii(int asciiIndex, int dimensionDivisor)
+        private int GetCellCountFromAscii(int asciiIndex, int dimensionDivisor)
         {
             return (asciiIndex - 1) / dimensionDivisor;
         }

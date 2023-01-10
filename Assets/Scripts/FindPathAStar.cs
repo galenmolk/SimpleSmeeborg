@@ -1,17 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using System;
 
 namespace SimpleSmeeborg
 {
     public class FindPathAStar : MonoBehaviour
     {
+        public static Action<List<PathMarker>> OnPathComplete;
+
         public Maze Maze { get; private set; }
         public Material OpenMaterial;
         public Material ClosedMaterial;
 
-        List<PathMarker> open = new List<PathMarker>();
-        List<PathMarker> closed = new List<PathMarker>();
+        public List<PathMarker> open = new List<PathMarker>();
+        public List<PathMarker> closed = new List<PathMarker>();
 
         public GameObject start;
         public GameObject end;
@@ -24,17 +28,24 @@ namespace SimpleSmeeborg
 
         private bool isPathComplete;
 
+        public bool Run;
+
+        private void OnValidate()
+        {
+            if (Run)
+            {
+                TryFindPath(lastPosition);
+            }
+        }
+
         private void BeginSearch()
         {
             isPathComplete = false;
 
             Cell startCell = Maze.StartCell;
             Cell finishCell = Maze.FinishCell;
-            Vector2 startLocation = startCell.Location;
-            Vector2 finishLocation = finishCell.Location;
-
-            Debug.Log("start: " + startLocation);
-            Debug.Log("finish: " + finishLocation);
+            Vector2 startLocation = startCell.Coordinates;
+            Vector2 finishLocation = finishCell.Coordinates;
 
             startNode = new PathMarker(startCell);
             finishNode = new PathMarker(finishCell);
@@ -45,38 +56,75 @@ namespace SimpleSmeeborg
 
             open.Add(startNode);
             lastPosition = startNode;
+
+            while (!TryFindPath(lastPosition))
+            {
+
+            }
         }
 
-        private void Search(PathMarker thisNode)
+        private bool TryFindPath(PathMarker thisNode)
         {
             // Check to see if we've reached the finish.
             if (thisNode.Cell.CellType == CellType.FINISH)
             {
                 isPathComplete = true;
-                return;
+    
+                OnPathComplete?.Invoke(GetPath());
+                return true;
             }
+
+            List<Cell> neighbors = Maze.GetNeighbors(thisNode.Cell);
 
             foreach (Cell neighbor in Maze.GetNeighbors(thisNode.Cell))
             {
-                Vector2Int neighborLocation = neighbor.Location;
-
+                Vector2Int neighborLocation = neighbor.Coordinates;
                 if (IsClosed(neighborLocation))
                 {
                     continue;
                 }
 
-                float gCost = GetGCost(thisNode, neighborLocation);
+                neighbor.instance.openClosedText.color = Color.red;
 
-                // next up H cost
+                float gCost = GetGCost(thisNode, neighborLocation);
+                float hCost = GetHCost(neighborLocation);
+                float fCost = gCost + hCost;
+
+                if (!TryUpdateMarker(neighbor, gCost, hCost, fCost, thisNode))
+                {
+                    open.Add(new PathMarker(neighbor, gCost, hCost, fCost, thisNode));
+                }
             }
+
+            open = open.OrderBy(p => p.F).ToList<PathMarker>();
+            PathMarker lowestCostPathMarker = open.ElementAt(0);
+            closed.Add(lowestCostPathMarker);
+            open.RemoveAt(0);
+
+            lastPosition = lowestCostPathMarker;
+            return false;
         }
 
         private bool IsClosed(Vector2Int location)
         {
             foreach (PathMarker pathMarker in closed)
             {
-                if (pathMarker.Cell.Location.Equals(location))
+                if (pathMarker.Cell.Coordinates.Equals(location))
                 {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool TryUpdateMarker(Cell neighbor, float g, float h, float f, PathMarker parent)
+        {
+            foreach (PathMarker pathMarker in open)
+            {
+                if (pathMarker.Cell.Equals(neighbor))
+                {
+                    pathMarker.UpdateProperties(g, h, f, parent);
                     return true;
                 }
             }
@@ -86,8 +134,28 @@ namespace SimpleSmeeborg
 
         private float GetGCost(PathMarker origin, Vector2Int neighborLocation)
         {
-            float distanceToNeighbor = Vector2.Distance(origin.Cell.Location, neighborLocation);
+            float distanceToNeighbor = Vector2Int.Distance(origin.Cell.Coordinates, neighborLocation);
             return origin.G + distanceToNeighbor;
+        }
+
+        private float GetHCost(Vector2Int neighborLocation)
+        {
+            return Vector2Int.Distance(neighborLocation, finishNode.Cell.Coordinates);
+        }
+
+        private List<PathMarker> GetPath()
+        {
+            List<PathMarker> path = new List<PathMarker>();
+
+            PathMarker thisPathMarker = lastPosition;
+
+            while (thisPathMarker.Parent != null)
+            {
+                path.Insert(0, thisPathMarker);
+                thisPathMarker = thisPathMarker.Parent;
+            }
+
+            return path;
         }
 
         private void Awake()

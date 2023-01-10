@@ -1,42 +1,38 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace SimpleSmeeborg
 {
+    [Serializable]
     public class Cell
     {
         public CellType CellType { get; private set; }
 
-        public bool HasNorthPassage => North == 0;
-        public bool HasSouthPassage => South == 0;
-        public bool HasEastPassage => East == 0;
-        public bool HasWestPassage => West == 0;
+        public bool HasNorthPassage;
+        public bool HasSouthPassage;
+        public bool HasEastPassage ;
+        public bool HasWestPassage;
 
-        public int North { get; }
-        public int South { get; }
-        public int East { get; }
-        public int West { get; }
-
-        public int X { get; }
-        public int Y { get; }
+        public int X;
+        public int Y;
 
         public CellBehaviour instance;
 
-        public Vector2Int Location { get; private set; }
+        public Vector2Int Coordinates { get; private set; }
+        public Vector2 WorldPosition { get; private set; }
+        public Vector2 Position { get; private set; }
 
         public Cell(CellProperties cellProperties)
         {
-            North = cellProperties.North;
-            South = cellProperties.South;
-            East = cellProperties.East;
-            West = cellProperties.West;
+            HasNorthPassage = cellProperties.HasNorthPassage;
+            HasSouthPassage = cellProperties.HasSouthPassage;
+            HasEastPassage = cellProperties.HasEastPassage;
+            HasWestPassage = cellProperties.HasWestPassage;
             X = cellProperties.X;
             Y = cellProperties.Y;
-            Location = new Vector2Int(X, Y);
-        }
-
-        public bool IsAccessible()
-        {
-            return North == 0 || South == 0 || East == 0 || West == 0;
+            Coordinates = new Vector2Int(X, Y);
+            Position = new Vector2(X, Y);
+            WorldPosition = new Vector2(X, -Y);
         }
 
         public void SetType(CellType cellType)

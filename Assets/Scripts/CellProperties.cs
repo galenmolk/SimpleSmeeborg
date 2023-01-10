@@ -6,20 +6,20 @@ namespace SimpleSmeeborg
 {
     public class CellProperties
     {
-        public int North { get; }
-        public int South { get; }
-        public int East { get; }
-        public int West { get; }
+        public bool HasNorthPassage { get; }
+        public bool HasSouthPassage { get; }
+        public bool HasEastPassage { get; }
+        public bool HasWestPassage { get; }
 
         public int X { get; }
         public int Y { get; }
 
-        public CellProperties(int north, int south, int east, int west, int x, int y)
+        public CellProperties(bool north, bool south, bool east, bool west, int x, int y)
         {
-            North = north;
-            South = south;
-            East = east;
-            West = west;
+            HasNorthPassage = north;
+            HasSouthPassage = south;
+            HasEastPassage = east;
+            HasWestPassage = west;
             X = x;
             Y = y;
         }

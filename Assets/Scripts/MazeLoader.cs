@@ -7,8 +7,10 @@ namespace SimpleSmeeborg
     {
         public static Action<Maze> OnMazeInitialized;
 
+        [SerializeField] private bool invokeMazeInitEvent;
+
         [SerializeField] private TextAsset inputAscii;
-        [SerializeField] private RectTransform cellParent;
+        [SerializeField] private Transform cellParent;
         [SerializeField] private CellBehaviour cellPrefab;
 
         private string asciiString;
@@ -28,13 +30,16 @@ namespace SimpleSmeeborg
                 for (int j = 0, length = row.Length; j < length; j++)
                 {
                     Cell cell = row[j];
-                    CellBehaviour cellBehaviour = Instantiate(cellPrefab, cellParent);
+                    CellBehaviour cellBehaviour = Instantiate(cellPrefab, cell.WorldPosition, Quaternion.identity, cellParent);
                     cellBehaviour.InitializeCell(cell);
                     cell.SetMonoBehaviourInstance(cellBehaviour);
                 }
             }
 
-            OnMazeInitialized?.Invoke(maze);
+            if (invokeMazeInitEvent)
+            {
+                OnMazeInitialized?.Invoke(maze);
+            }
         }
     }
 }

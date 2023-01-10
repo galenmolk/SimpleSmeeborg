@@ -1,9 +1,10 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace SimpleSmeeborg
 {
-    [RequireComponent(typeof(Image))]
+    [RequireComponent(typeof(SpriteRenderer))]
     public class CellBehaviour : MonoBehaviour
     {
         private readonly int northUniform = Shader.PropertyToID("_North");
@@ -14,9 +15,17 @@ namespace SimpleSmeeborg
         [SerializeField] private GameObject startIcon;
         [SerializeField] private GameObject finishIcon;
 
-        private Cell Cell { get; set; }
+        public TMP_Text gCost;
+        public TMP_Text hCost;
+        public TMP_Text fCost;
+        public TMP_Text openClosedText;
 
-        private Image image;
+        public Cell Cell;
+
+        public Vector2 Position => thisTransform.position;
+
+        private SpriteRenderer spriteRenderer;
+        private Transform thisTransform;
 
         public void InitializeCell(Cell cell)
         {
@@ -28,12 +37,12 @@ namespace SimpleSmeeborg
 
         private void SetWallVisuals()
         {
-            Material material = new Material(image.material);
-            material.SetInt(northUniform, Cell.North);
-            material.SetInt(southUniform, Cell.South);
-            material.SetInt(eastUniform, Cell.East);
-            material.SetInt(westUniform, Cell.West);
-            image.material = material;
+            Material material = new Material(spriteRenderer.material);
+            material.SetInt(northUniform, Cell.HasNorthPassage.ToInt());
+            material.SetInt(southUniform, Cell.HasSouthPassage.ToInt());
+            material.SetInt(eastUniform, Cell.HasEastPassage.ToInt());
+            material.SetInt(westUniform, Cell.HasWestPassage.ToInt());
+            spriteRenderer.material = material;
         }
 
         private void ToggleIcons()
@@ -51,7 +60,8 @@ namespace SimpleSmeeborg
 
         private void Awake()
         {
-            image = GetComponent<Image>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            thisTransform = transform;
         }
     }
 }

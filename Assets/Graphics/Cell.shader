@@ -6,6 +6,8 @@ Shader "Unlit/Cell"
         _FloorColor ("Floor Color", Color) = (1,1,1,1)
         _WallThickness ("Wall Thickness", Range(0.03, 0.2)) = 0.1
 
+        _MainTex ("Texture", 2D) = "white" {}
+
         [Toggle] _North ("North", Float) = 0
         [Toggle] _South ("South", Float) = 0
         [Toggle] _East ("East", Float) = 0
@@ -33,22 +35,22 @@ Shader "Unlit/Cell"
 
             fixed getNorthPassability(fixed y)
             {
-                return _North == 0 || y < 1 - _WallThickness;
+                return _North == 1 || y < 1 - _WallThickness;
             }
 
             fixed getSouthPassability(fixed y)
             {
-                return _South == 0 || y > _WallThickness;
+                return _South == 1 || y > _WallThickness;
             }
 
             fixed getEastPassability(fixed x)
             {
-                return _East == 0 || x < 1 - _WallThickness;
+                return _East == 1 || x < 1 - _WallThickness;
             }
 
             fixed getWestPassability(fixed x)
             {
-                return _West == 0 || x > _WallThickness;
+                return _West == 1 || x > _WallThickness;
             }
 
             fixed getInterpolant(fixed x, fixed y)
