@@ -17,6 +17,10 @@ namespace SimpleSmeeborg
             {
                 LoadMaze();
             }
+            else
+            {
+                Debug.LogError($"{nameof(MazeLoader)}: No input found.");
+            }
         }
 
         private bool InputExists()

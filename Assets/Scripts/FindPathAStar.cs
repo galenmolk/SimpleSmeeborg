@@ -12,7 +12,6 @@ namespace SimpleSmeeborg
     public static class FindPathAStar
     {
         public static Action<List<PathNode>> OnPathComplete;
-        public static Action OnPathFailed;
 
         private static Maze mazeInstance;
 
@@ -177,7 +176,6 @@ namespace SimpleSmeeborg
             {
                 Debug.LogError($"{nameof(FindPathAStar)}: no solution found.");
                 isSearching = false;
-                OnPathFailed?.Invoke();
                 return;
             }
 

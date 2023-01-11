@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -8,7 +9,7 @@ namespace SimpleSmeeborg
     public class ShowSolutionButton : MonoBehaviour
     {
         [SerializeField] private UnityEvent onPressed;
-        [SerializeField] private GameObject canvas;
+        [SerializeField] private CanvasGroup canvasGroup;
 
         private Button button;
 
@@ -16,12 +17,12 @@ namespace SimpleSmeeborg
         {
             button = GetComponent<Button>();
             button.onClick.AddListener(InvokeOnPressed);
-            FindPathAStar.OnPathFailed += HandlePathFailed;
+            FindPathAStar.OnPathComplete += HandlePathComplete;
         }
 
         private void OnDestroy()
         {
-            FindPathAStar.OnPathFailed -= HandlePathFailed;
+            FindPathAStar.OnPathComplete -= HandlePathComplete;
         }
 
         private void InvokeOnPressed()
@@ -29,10 +30,9 @@ namespace SimpleSmeeborg
             onPressed?.Invoke();
         }
 
-        private void HandlePathFailed()
+        private void HandlePathComplete(List<PathNode> path)
         {
-            // Hide the UI if no maze solution was found.
-            canvas.SetActive(false);
+            canvasGroup.alpha = 1f;
         }
     }
 }
