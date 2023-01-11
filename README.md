@@ -26,6 +26,10 @@ The application expects the ASCII maze to consist of a grid of rooms, or cells. 
 * The ASCII file, when parsed into a grid, is expected to have a uniform row length and a uniform column length (no standalone rooms protruding from one side of the maze)
 * If the inputted ASCII does not match these expectations, the application will likely produce unspecified results
 
+## Unity Version
+
+Latest 2021 LTS: [2021.3.16.f1](https://unity.com/releases/editor/qa/lts-releases)
+
 ## Script Flow
 
 ### `MazeLoader` (MonoBehaviour)
@@ -78,8 +82,8 @@ The application expects the ASCII maze to consist of a grid of rooms, or cells. 
 
 ### `ShowSolutionButton` (MonoBehaviour)
 
+* Reveals the UI in the event that a path was successfully found
 * Invokes a `UnityEvent` when the user clicks the button, hiding the UI and triggering the `Character` instance's animation
-* Hides the UI in the event that a path was not found
 
 ## Additional Scripts
 
