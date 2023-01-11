@@ -12,15 +12,25 @@ namespace SimpleSmeeborg
     {
         [Tooltip("Time in seconds for character to traverse between two cells.")]
         [SerializeField] private float tweenDuration;
+        [SerializeField] private GameObject graphics;
 
         private Transform thisTransform;
         private YieldInstruction tweenYield;
+
+        private List<PathNode> mazeSolution;
+
+        public void FollowPath()
+        {
+            if (mazeSolution.Count > 1)
+            {
+                StartCoroutine(TweenThroughMaze(mazeSolution));
+            }
+        }
 
         private void Awake()
         {
             thisTransform = transform;
             tweenYield = new WaitForSeconds(tweenDuration);
-             
             FindPathAStar.OnPathComplete += HandlePathComplete;
         }
 
@@ -31,17 +41,18 @@ namespace SimpleSmeeborg
 
         private void HandlePathComplete(List<PathNode> path)
         {
-            StartCoroutine(TweenThroughMaze(path));
+            mazeSolution = path;
         }
 
         private IEnumerator TweenThroughMaze(List<PathNode> path)
         {
             thisTransform.position = path[0].WorldPosition;
+            graphics.SetActive(true);
 
             for (int i = 0, count = path.Count; i < count; i++)
             {
-                transform.DOMove(path[i].WorldPosition, tweenDuration);
                 yield return tweenYield;
+                transform.DOMove(path[i].WorldPosition, tweenDuration);
             }
         }
     }

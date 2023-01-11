@@ -69,12 +69,13 @@ namespace SimpleSmeeborg
             List<PathNode> path = new List<PathNode>();
             PathNode thisNode = lastNode;
 
-            while (thisNode.Parent != null && thisNode.CellType != CellType.START)
+            while (thisNode.Parent != null)
             {
                 path.Insert(0, thisNode);
                 thisNode = thisNode.Parent;
             }
 
+            path.Insert(0, startNode);
             return path;
         }
 
