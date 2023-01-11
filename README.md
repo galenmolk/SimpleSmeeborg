@@ -97,3 +97,13 @@ The application expects the ASCII maze to consist of a grid of cells. The genera
 ### `CellType` (enum)
 
 * Used to identify the start and finish rooms
+
+## Improvements
+
+* **UI:** Provide more information to the user through UI, including pathfinding error messages, maze data, etc 
+* **Feedback:** Improve the character animation so it's more interesting, design and build a maze completion state, add sound effects that coincide with the character's actions
+* **Input Flexibility:** Refactor the input ASCII system so the text file can be received from an abstract source via an interface. Create input interface implementations that allow for the ASCII to be received through an HTTP GET request, read from a local file, loaded from an Addressable asset, etc
+* **Format Options:** Expand the ASCII parsing system to accomodate different maze formats
+* **Robustness/Error Handling:** Put checks in place to catch small typos, whitespace or other mistakes in the ASCII and design a way to either alert the end user of these discrepancies or handle them silently
+* **Maze Generation:** Implement procedural maze generation algorithms to improve testability and level design capabilities. This could be an editor-only feature for the team, a user-facing feature, or both
+* **Optimization:** Investigate various optimizations, such as: preferable alternatives to the LINQ usage in the A* class, object pooling for CellBehaviour instances and/or loading the CellBehaviour prefab via Addressables, create a class utilizing a `HashSet<Material>` in an accessible location so `CellBehaviour` instances can share identical `Material` instances between them, when possible
