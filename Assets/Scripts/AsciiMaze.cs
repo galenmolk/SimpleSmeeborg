@@ -30,7 +30,7 @@ namespace SimpleSmeeborg
                 return;
             }
 
-            // Only accept ASCII mazes with uniform line length, clamping to the
+            // Assume that the ASCII maze has a uniform line length, clamping to the
             // shortest length if there is variation.
             Width = GetShortestLineLength(lines, Height);
 
@@ -44,10 +44,11 @@ namespace SimpleSmeeborg
 
         public Cell MakeCell(int x, int y)
         {
-            // Get the ASCII indices at the top-left corner of the cell.
+            // Get the ASCII indices corresponding to the top-left corner of the cell.
             int asciiX = GetAsciiIndexForCell(x, CELL_X_LENGTH);
             int asciiY = GetAsciiIndexForCell(y, CELL_Y_LENGTH);
 
+            // Create a new Cell with the appropriate accessibility.
             return new Cell(
                 IsNorthPassable(asciiX, asciiY),
                 IsSouthPassable(asciiX, asciiY),
@@ -97,28 +98,28 @@ namespace SimpleSmeeborg
 
         private bool IsNorthPassable(int x, int y)
         {
-            // Get the leftmost char of the top cell wall.
+            // Get the leftmost char of the room's top wall.
             char northWall = charMatrix[x + 1, y];
             return IsCharPassable(northWall);
         }
 
         private bool IsSouthPassable(int x, int y)
         {
-            // Get the leftmost char of the bottom cell wall.
+            // Get the leftmost char of the room's bottom wall.
             char southWall = charMatrix[x + 1, y + CELL_Y_LENGTH];
             return IsCharPassable(southWall);
         }
 
         private bool IsEastPassable(int x, int y)
         {
-            // Get the char of the right cell wall.
+            // Get the char of the room's right wall.
             char eastWall = charMatrix[x + CELL_X_LENGTH, y + 1];
             return IsCharPassable(eastWall);
         }
 
         private bool IsWestPassable(int x, int y)
         {
-            // Get the char of the left cell wall.
+            // Get the char of the room's left wall.
             char westWall = charMatrix[x, y + 1];
             return IsCharPassable(westWall);
         }

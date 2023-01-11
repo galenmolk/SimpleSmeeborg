@@ -3,7 +3,7 @@ namespace SimpleSmeeborg
     public static class BoolExtensions
     {
         /// <summary>
-        /// A readability extension method for standard bool-to-int conversions.
+        /// A readability extension method for bool-to-int conversions.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>

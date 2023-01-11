@@ -10,7 +10,7 @@ namespace SimpleSmeeborg
         public float G { get; private set; }
         public float F { get; private set; }
 
-        // Convenience properties for classes utilizing PathNode.
+        // Convenience properties for the classes utilizing PathNode.
         public Vector2Int Coordinates => Cell.Coordinates;
         public Vector2 WorldPosition => Cell.WorldPosition;
         public CellType CellType => Cell.CellType;

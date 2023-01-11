@@ -62,10 +62,10 @@ namespace SimpleSmeeborg
             foreach (Vector2Int direction in cardinalDirections)
             {
                 // Offset the origin coordinates by each of the cardinal directions
-                // to find its neighbors.
+                // to find neighbors.
                 Vector2Int coordinates = origin.Coordinates + direction;
 
-                // Check to see if this coordinate exists in the maze.
+                // Check to see if this neighbor coordinate exists in the maze.
                 if (!TryGetCell(coordinates, out Cell neighbor))
                 {
                     continue;
@@ -104,7 +104,7 @@ namespace SimpleSmeeborg
 
         /// <summary>
         /// IsNeighborAccessible finds the directional relationship between two
-        /// cells. It returns true if no walls exist between the two cells.
+        /// rooms. It returns true if no walls exist between the two rooms.
         /// </summary>
         /// <param name="origin"></param>
         /// <param name="neighbor"></param>

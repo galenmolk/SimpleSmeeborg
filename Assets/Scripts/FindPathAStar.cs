@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,8 +6,8 @@ using UnityEngine;
 namespace SimpleSmeeborg
 {
     /// <summary>
-    /// FindPathAStar uses an implementation of the A Star search algorithm 
-    /// to find the shortest path of maze cells from start to finish.
+    /// FindPathAStar uses an implementation of the A* search algorithm 
+    /// to find the shortest path of maze rooms from start to finish.
     /// </summary>
     public static class FindPathAStar
     {
@@ -55,8 +54,6 @@ namespace SimpleSmeeborg
             isSearching = true;
 
             SearchContinuously();
-
-
         }
 
         private static void SearchContinuously()
@@ -65,8 +62,6 @@ namespace SimpleSmeeborg
             {
                 FindPath();
             }
-
-
         }
 
         private static void FindPath()
