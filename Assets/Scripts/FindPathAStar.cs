@@ -10,61 +10,85 @@ namespace SimpleSmeeborg
     /// FindPathAStar uses an implementation of the A Star search algorithm 
     /// to find the shortest path of maze cells from start to finish.
     /// </summary>
-    public class FindPathAStar : MonoBehaviour
+    public static class FindPathAStar
     {
         public static Action<List<PathNode>> OnPathComplete;
+        public static Action OnPathFailed;
 
-        private Maze maze;
+        private static Maze mazeInstance;
 
-        private List<PathNode> openNodes = new List<PathNode>();
-        private readonly List<PathNode> closedNodes = new List<PathNode>();
+        private static List<PathNode> openNodes = new List<PathNode>();
+        private static readonly List<PathNode> closedNodes = new List<PathNode>();
 
-        private PathNode startNode;
-        private PathNode finishNode;
-        private PathNode lastNode;
+        private static PathNode startNode;
+        private static PathNode finishNode;
+        private static PathNode lastNode;
 
-        private bool isSearching;
+        private static bool isSearching;
 
-        private void BeginSearch()
+        [RuntimeInitializeOnLoadMethod]
+        private static void Initialize()
         {
-            startNode = new PathNode(maze.StartCell);
-            finishNode = new PathNode(maze.FinishCell);
+            Application.quitting += HandleApplicationQuit;
+            MazeLoader.OnMazeInitialized += HandleMazeInitialized;
+        }
+
+        private static void HandleApplicationQuit()
+        {
+            Application.quitting -= HandleApplicationQuit;
+            MazeLoader.OnMazeInitialized -= HandleMazeInitialized;
+        }
+
+        private static void HandleMazeInitialized(Maze maze)
+        {
+            mazeInstance = maze;
+            BeginSearch();
+        }
+
+        private static void BeginSearch()
+        {
+            startNode = new PathNode(mazeInstance.StartCell);
+            finishNode = new PathNode(mazeInstance.FinishCell);
 
             openNodes.Add(startNode);
             lastNode = startNode;
             isSearching = true;
 
-            StartCoroutine(SearchContinuously());
+            SearchContinuously();
+
+
         }
 
-        private IEnumerator SearchContinuously()
+        private static void SearchContinuously()
         {
             while (isSearching)
             {
                 FindPath();
-                yield return null;
             }
+
+
         }
 
-        private void FindPath()
+        private static void FindPath()
         {
             // Check to see if we've reached the finish node.
             if (IsPathComplete(lastNode))
             {
-                OnPathComplete?.Invoke(GetCompletePath());
                 isSearching = false;
+                OnPathComplete?.Invoke(GetCompletePath());
+                return;
             }
 
             SearchNeighbors(lastNode);
             ProcessCheapestNode();
         }
 
-        private bool IsPathComplete(PathNode currentNode)
+        private static bool IsPathComplete(PathNode currentNode)
         {
             return currentNode.CellType == CellType.FINISH;
         }
 
-        private List<PathNode> GetCompletePath()
+        private static List<PathNode> GetCompletePath()
         {
             List<PathNode> path = new List<PathNode>();
             PathNode thisNode = lastNode;
@@ -79,9 +103,9 @@ namespace SimpleSmeeborg
             return path;
         }
 
-        private void SearchNeighbors(PathNode currentNode)
+        private static void SearchNeighbors(PathNode currentNode)
         {
-            List<Cell> neighbors = maze.GetValidNeighbors(currentNode.Cell);
+            List<Cell> neighbors = mazeInstance.GetValidNeighbors(currentNode.Cell);
 
             foreach (Cell neighbor in neighbors)
             {
@@ -89,7 +113,7 @@ namespace SimpleSmeeborg
             }
         }
 
-        private void CalculateNeighborCosts(Cell neighbor, PathNode currentNode)
+        private static void CalculateNeighborCosts(Cell neighbor, PathNode currentNode)
         {
             Vector2Int neighborLocation = neighbor.Coordinates;
 
@@ -115,17 +139,17 @@ namespace SimpleSmeeborg
             }
         }
 
-        private float GetGCost(PathNode origin, Vector2Int neighborPos)
+        private static float GetGCost(PathNode origin, Vector2Int neighborPos)
         {
             return origin.G + Vector2Int.Distance(origin.Coordinates, neighborPos);
         }
 
-        private float GetHCost(Vector2Int neighborLocation)
+        private static float GetHCost(Vector2Int neighborLocation)
         {
             return Vector2Int.Distance(neighborLocation, finishNode.Coordinates);
         }
 
-        private bool IsNeighborInClosedList(Vector2Int neighborCoordinates)
+        private static bool IsNeighborInClosedList(Vector2Int neighborCoordinates)
         {
             for (int i = 0, count = closedNodes.Count; i < count; i++)
             {
@@ -138,7 +162,7 @@ namespace SimpleSmeeborg
             return false;
         }
 
-        private bool TryUpdateNodeCosts(Cell neighbor, float g, float h, float f, PathNode parent)
+        private static bool TryUpdateNodeCosts(Cell neighbor, float g, float h, float f, PathNode parent)
         {
             foreach (PathNode node in openNodes)
             {
@@ -152,12 +176,13 @@ namespace SimpleSmeeborg
             return false;
         }
 
-        private void ProcessCheapestNode()
+        private static void ProcessCheapestNode()
         {
             if (openNodes.Count == 0)
             {
                 Debug.LogError($"{nameof(FindPathAStar)}: no solution found.");
                 isSearching = false;
+                OnPathFailed?.Invoke();
                 return;
             }
 
@@ -171,22 +196,6 @@ namespace SimpleSmeeborg
             openNodes.RemoveAt(0);
 
             lastNode = cheapestNode;
-        }
-
-        private void Awake()
-        {
-            MazeLoader.OnMazeInitialized += HandleMazeInitialized;
-        }
-
-        private void OnDestroy()
-        {
-            MazeLoader.OnMazeInitialized -= HandleMazeInitialized;
-        }
-
-        private void HandleMazeInitialized(Maze maze)
-        {
-            this.maze = maze;
-            BeginSearch();
         }
     }
 }

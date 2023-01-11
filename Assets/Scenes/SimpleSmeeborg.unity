@@ -235,7 +235,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 470055938}
-  - component: {fileID: 470055937}
   m_Layer: 5
   m_Name: Maze
   m_TagString: Untagged
@@ -243,18 +242,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &470055937
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 470055932}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 772ae65bbbd104454ac8ce6f62a8ad9e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &470055938
 Transform:
   m_ObjectHideFlags: 0
@@ -564,6 +551,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  canvas: {fileID: 62388312}
 --- !u!1 &711422684
 GameObject:
   m_ObjectHideFlags: 0

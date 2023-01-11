@@ -21,7 +21,7 @@ namespace SimpleSmeeborg
 
         public void FollowPath()
         {
-            if (mazeSolution.Count > 1)
+            if (mazeSolution != null && mazeSolution.Count > 1)
             {
                 StartCoroutine(TweenThroughMaze(mazeSolution));
             }

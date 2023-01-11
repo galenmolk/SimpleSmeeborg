@@ -84,15 +84,22 @@ namespace SimpleSmeeborg
         private bool TryGetCell(Vector2Int coordinates, out Cell cell)
         {
             cell = null;
+            int x = coordinates.x;
+            int y = coordinates.y;
 
             // Verify that the coordinates are within the bounds of the maze.
-            if (coordinates.x.IsWithin(-1, Width) && coordinates.y.IsWithin(-1, Height))
+            if (IsPositionInMaze(x, y))
             {
-                cell = cellMatrix[coordinates.x, coordinates.y];
+                cell = cellMatrix[x, y];
                 return true;
             }
 
             return false;
+        }
+
+        private bool IsPositionInMaze(int x, int y)
+        {
+            return x >= 0 && x < Width && y >= 0 && y < Height;
         }
 
         /// <summary>
