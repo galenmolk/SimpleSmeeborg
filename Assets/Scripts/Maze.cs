@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace SimpleSmeeborg
 {
@@ -9,12 +8,11 @@ namespace SimpleSmeeborg
         public Cell StartCell { get; private set; }
         public Cell FinishCell { get; private set; }
 
-        public Cell[][] CellArrays { get; private set; }
-
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        private AsciiMaze asciiMatrix;
+        private readonly AsciiMaze asciiMaze;
+        private Cell[,] cellMatrix;
 
         private readonly List<Vector2Int> cardinalDirections = new List<Vector2Int>()
         {
@@ -24,52 +22,56 @@ namespace SimpleSmeeborg
             Vector2Int.left
         };
 
-        public void InitializeMaze(string asciiInput)
+        public Maze(string asciiInput)
         {
-            asciiMatrix = new AsciiMaze(asciiInput);
+            asciiMaze = new AsciiMaze(asciiInput);
             CreateCellMatrix();
         }
 
         private void CreateCellMatrix()
         {
-            Height = GetCellCountFromAscii(asciiMatrix.AsciiRowCount, FormatConsts.CELL_Y_LENGTH);
+            Width = asciiMaze.GetCellXCount();
+            Height = asciiMaze.GetCellYCount();
 
-            CellArrays = new Cell[Height][];
+            cellMatrix = new Cell[Width, Height];
 
-            for (int rowIndex = 0; rowIndex < Height; rowIndex++)
+            for (int x = 0; x < Width; x++)
             {
-                Width = GetCellCountFromAscii(asciiMatrix.GetRowLength(rowIndex), FormatConsts.CELL_X_LENGTH);
-
-                CellArrays[rowIndex] = new Cell[Width];
-
-                for (int columnIndex = 0; columnIndex < Width; columnIndex++)
+                for (int y = 0; y < Height; y++)
                 {
-                    CellArrays[rowIndex][columnIndex] = asciiMatrix.MakeCell(rowIndex, columnIndex);
+                    cellMatrix[x, y] = asciiMaze.MakeCell(x, y);
                 }
             }
 
-            StartCell = CellArrays[0][0];
-            FinishCell = CellArrays[Height - 1][Width - 1];
+            StartCell = cellMatrix[0, 0];
+            FinishCell = cellMatrix[Width - 1, Height - 1];
 
             StartCell.SetType(CellType.START);
             FinishCell.SetType(CellType.FINISH);
         }
 
-        public List<Cell> GetNeighbors(Cell origin)
+        public Cell GetCell(int x, int y)
+        {
+            return cellMatrix[x, y];
+        }
+
+        public List<Cell> GetValidNeighbors(Cell origin)
         {
             List<Cell> neighbors = new List<Cell>();
 
-            Vector2Int cellLocation = origin.Coordinates;
-
             foreach (Vector2Int direction in cardinalDirections)
             {
-                Vector2Int neighborLocation = cellLocation + direction;
+                // Offset the origin coordinates by each of the cardinal directions
+                // to find its neighbors.
+                Vector2Int coordinates = origin.Coordinates + direction;
 
-                if (!TryGetCell(neighborLocation, out Cell neighbor))
+                // Check to see if this coordinate exists in the maze.
+                if (!TryGetCell(coordinates, out Cell neighbor))
                 {
                     continue;
                 }
 
+                // Consider the neighbor valid if it is unblocked by a wall.
                 if (IsNeighborAccessible(origin, neighbor))
                 {
                     neighbors.Add(neighbor);
@@ -79,35 +81,27 @@ namespace SimpleSmeeborg
             return neighbors;
         }
 
-        private bool TryGetCell(Vector2Int position, out Cell cell)
+        private bool TryGetCell(Vector2Int coordinates, out Cell cell)
         {
             cell = null;
 
-            if (position.x < 0 || position.y < 0)
+            // Verify that the coordinates are within the bounds of the maze.
+            if (coordinates.x.IsWithin(-1, Width) && coordinates.y.IsWithin(-1, Height))
             {
-                Debug.Log($"Cell position {position} must not be less than zero.");
-                return false;
+                cell = cellMatrix[coordinates.x, coordinates.y];
+                return true;
             }
 
-            if (position.y > Height - 1)
-            {
-                Debug.Log($"Cell Y position {position} must not be greater than the number of rows {Height}.");
-                return false;
-            }
-
-            int columnCount = CellArrays[position.y].Length;
-            Debug.Log($"Column Count for row {position.x}: {columnCount}");
-
-            if (position.x > columnCount - 1)
-            {
-                Debug.Log($"Cell X position {position} must not be greater than the number of columns {columnCount}.");
-                return false;
-            }
-
-            cell = CellArrays[position.y][position.x];
-            return true;
+            return false;
         }
 
+        /// <summary>
+        /// IsNeighborAccessible finds the directional relationship between two
+        /// cells. It returns true if no walls exist between the two cells.
+        /// </summary>
+        /// <param name="origin"></param>
+        /// <param name="neighbor"></param>
+        /// <returns></returns>
         private bool IsNeighborAccessible(Cell origin, Cell neighbor)
         {
             if (origin.IsNorthOf(neighbor))
@@ -127,13 +121,11 @@ namespace SimpleSmeeborg
                 return origin.HasEastPassage && neighbor.HasWestPassage;
             }
 
-            Debug.LogError($"Neighbor {neighbor.Coordinates} is not in one of the cardinal directions from origin {origin.Coordinates}.");
-            return false;
-        }
+            Debug.LogError($"{nameof(Maze)}.{nameof(IsNeighborAccessible)}: " +
+                $"Neighbor ({neighbor.Coordinates}) is not in one of the cardinal " +
+                $"directions from the origin ({origin.Coordinates}).");
 
-        private int GetCellCountFromAscii(int asciiIndex, int dimensionDivisor)
-        {
-            return (asciiIndex - 1) / dimensionDivisor;
+            return false;
         }
     }
 }

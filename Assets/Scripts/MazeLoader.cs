@@ -7,39 +7,47 @@ namespace SimpleSmeeborg
     {
         public static Action<Maze> OnMazeInitialized;
 
-        [SerializeField] private bool invokeMazeInitEvent;
-
         [SerializeField] private TextAsset inputAscii;
         [SerializeField] private Transform cellParent;
         [SerializeField] private CellBehaviour cellPrefab;
 
-        private string asciiString;
-
         private void Start()
         {
-            asciiString = inputAscii.text;
-
-            Maze maze = new Maze();
-
-            maze.InitializeMaze(asciiString);
-
-            for (int i = 0; i < maze.CellArrays.GetLength(0); i++)
+            if (InputExists())
             {
-                Cell[] row = maze.CellArrays[i];
+                LoadMaze();
+            }
+        }
 
-                for (int j = 0, length = row.Length; j < length; j++)
+        private bool InputExists()
+        {
+            return inputAscii != null && !string.IsNullOrWhiteSpace(inputAscii.text);
+        }
+
+        private void LoadMaze()
+        {
+            Maze maze = new Maze(inputAscii.text);
+
+            for (int x = 0; x < maze.Width; x++)
+            {
+                for (int y = 0; y < maze.Height; y++)
                 {
-                    Cell cell = row[j];
-                    CellBehaviour cellBehaviour = Instantiate(cellPrefab, cell.WorldPosition, Quaternion.identity, cellParent);
-                    cellBehaviour.InitializeCell(cell);
-                    cell.SetMonoBehaviourInstance(cellBehaviour);
+                    CreateCellBehaviour(maze.GetCell(x, y));
                 }
             }
 
-            if (invokeMazeInitEvent)
-            {
-                OnMazeInitialized?.Invoke(maze);
-            }
+            OnMazeInitialized?.Invoke(maze);
+        }
+
+        private void CreateCellBehaviour(Cell cell)
+        {
+            CellBehaviour cellBehaviour = Instantiate(
+                cellPrefab,
+                cell.WorldPosition,
+                Quaternion.identity,
+                cellParent);
+
+            cellBehaviour.InitializeCell(cell);
         }
     }
 }

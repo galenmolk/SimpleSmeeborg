@@ -1,103 +1,131 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 namespace SimpleSmeeborg
 {
+    /// <summary>
+    /// AsciiMaze generates a 2D char matrix from the inputted string.
+    /// </summary>
     public class AsciiMaze
     {
-        private const int PASSABLE = 0;
-        private const int IMPASSABLE = 1;
+        private const int CELL_X_LENGTH = 3;
+        private const int CELL_Y_LENGTH = 2;
+
         private const char NEW_LINE = '\n';
         private const char BLANK_SPACE = ' ';
 
-        private readonly char[][] asciiArrays;
+        public int Width { get; private set; }
+        public int Height { get; private set; }
 
-        public int AsciiRowCount { get; private set; }
-        private readonly int[] asciiRowLengths;
+        private readonly char[,] charMatrix;
 
         public AsciiMaze(string asciiInput)
         {
-            string[] rows = asciiInput.Split(NEW_LINE);
+            string[] lines = asciiInput.Split(NEW_LINE, StringSplitOptions.RemoveEmptyEntries);
 
-            AsciiRowCount = rows.Length;
-            asciiRowLengths = new int[AsciiRowCount];
+            Height = lines.Length;
 
-            asciiArrays = new char[AsciiRowCount][];
-
-            for (int rowIndex = 0; rowIndex < AsciiRowCount; rowIndex++)
+            if (Height == 0)
             {
-                CreateAsciiCharRow(rows[rowIndex], rowIndex);
+                return;
+            }
+
+            // Only accept ASCII mazes with uniform line length, clamping to the
+            // shortest length if there is variation.
+            Width = GetShortestLineLength(lines, Height);
+
+            charMatrix = new char[Width, Height];
+
+            for (int lineIndex = 0; lineIndex < Height; lineIndex++)
+            {
+                CreateAsciiCharArray(lines[lineIndex], lineIndex);
             }
         }
 
-        public int GetRowLength(int rowIndex)
+        public Cell MakeCell(int x, int y)
         {
-            return asciiRowLengths[rowIndex];
+            // Get the ASCII indices at the top-left corner of the cell.
+            int asciiX = GetAsciiIndexForCell(x, CELL_X_LENGTH);
+            int asciiY = GetAsciiIndexForCell(y, CELL_Y_LENGTH);
+
+            return new Cell(
+                IsNorthPassable(asciiX, asciiY),
+                IsSouthPassable(asciiX, asciiY),
+                IsEastPassable(asciiX, asciiY),
+                IsWestPassable(asciiX, asciiY),
+                x, y);
         }
 
-        public Cell MakeCell(int row, int column)
+        public int GetCellXCount()
         {
-            CellProperties properties = GetCellProps(row, column);
-            return new Cell(properties);
+            return (Width - 1) / CELL_X_LENGTH;
         }
 
-        public CellProperties GetCellProps(int cellRow, int cellColumn)
+        public int GetCellYCount()
         {
-            int asciiRow = GetAsciiIndexForCell(cellRow, FormatConsts.CELL_Y_LENGTH);
-            int asciiColumn = GetAsciiIndexForCell(cellColumn, FormatConsts.CELL_X_LENGTH);
-
-            return new CellProperties(
-                IsNorthPassable(asciiRow, asciiColumn),
-                IsSouthPassable(asciiRow, asciiColumn),
-                IsEastPassable(asciiRow, asciiColumn),
-                IsWestPassable(asciiRow, asciiColumn),
-                cellColumn, cellRow);
+            return (Height - 1) / CELL_Y_LENGTH;
         }
 
-        private int GetAsciiIndexForCell(int index, int dimensionFactor)
+        private int GetShortestLineLength(string[] lines, int lineCount)
         {
-            return index * dimensionFactor;
-        }
+            int shortest = int.MaxValue;
 
-        private void CreateAsciiCharRow(string row, int rowIndex)
-        {
-            int rowLength = row.Length;
-            asciiRowLengths[rowIndex] = rowLength;
-            asciiArrays[rowIndex] = new char[rowLength];
-
-            for (int charIndex = 0; charIndex < rowLength; charIndex++)
+            for (int i = 0; i < lineCount; i++)
             {
-                asciiArrays[rowIndex][charIndex] = row[charIndex];
+                int lineLength = lines[i].Length;
+                shortest = Mathf.Min(shortest, lineLength);
+            }
+
+            return shortest;
+        }
+
+        private void CreateAsciiCharArray(string line, int lineIndex)
+        {
+            // Ignore chars if their index would exceed the maze width.
+            int lineLength = Mathf.Min(line.Length, Width);
+
+            for (int charIndex = 0; charIndex < lineLength; charIndex++)
+            {
+                charMatrix[charIndex, lineIndex] = line[charIndex];
             }
         }
 
-        private bool IsNorthPassable(int row, int column)
+        private int GetAsciiIndexForCell(int cellIndex, int dimensionFactor)
         {
-            char northWall = asciiArrays[row][column + 1];
-            return IsPassable(northWall);
+            return cellIndex * dimensionFactor;
         }
 
-        private bool IsSouthPassable(int row, int column)
+        private bool IsNorthPassable(int x, int y)
         {
-            char southWall = asciiArrays[row + FormatConsts.CELL_Y_LENGTH][column + 1];
-            return IsPassable(southWall);
+            // Get the leftmost char of the top cell wall.
+            char northWall = charMatrix[x + 1, y];
+            return IsCharPassable(northWall);
         }
 
-        private bool IsEastPassable(int row, int column)
+        private bool IsSouthPassable(int x, int y)
         {
-            char eastWall = asciiArrays[row + 1][column + FormatConsts.CELL_X_LENGTH];
-            return IsPassable(eastWall);
+            // Get the leftmost char of the bottom cell wall.
+            char southWall = charMatrix[x + 1, y + CELL_Y_LENGTH];
+            return IsCharPassable(southWall);
         }
 
-        private bool IsWestPassable(int row, int column)
+        private bool IsEastPassable(int x, int y)
         {
-            char westWall = asciiArrays[row + 1][column];
-            return IsPassable(westWall);
+            // Get the char of the right cell wall.
+            char eastWall = charMatrix[x + CELL_X_LENGTH, y + 1];
+            return IsCharPassable(eastWall);
         }
 
-        private bool IsPassable(char c)
+        private bool IsWestPassable(int x, int y)
         {
+            // Get the char of the left cell wall.
+            char westWall = charMatrix[x, y + 1];
+            return IsCharPassable(westWall);
+        }
+
+        private bool IsCharPassable(char c)
+        {
+            // In the given maze format, a blank space implies the absence of a wall.
             return c.CompareTo(BLANK_SPACE) == 0;
         }
     }

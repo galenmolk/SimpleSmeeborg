@@ -1,6 +1,4 @@
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace SimpleSmeeborg
 {
@@ -15,39 +13,33 @@ namespace SimpleSmeeborg
         [SerializeField] private GameObject startIcon;
         [SerializeField] private GameObject finishIcon;
 
-        public TMP_Text gCost;
-        public TMP_Text hCost;
-        public TMP_Text fCost;
-        public TMP_Text openClosedText;
-
-        public Cell Cell;
-
-        public Vector2 Position => thisTransform.position;
-
         private SpriteRenderer spriteRenderer;
         private Transform thisTransform;
 
         public void InitializeCell(Cell cell)
         {
-            Cell = cell;
-            SetWallVisuals();
-            ToggleIcons();
-            gameObject.name = $"Cell ({cell.X},{cell.Y})";
+            SetWallVisuals(cell);
+            TryToggleIcons(cell.CellType);
+
+            // Give meaningful names to the cells if running in the editor.
+            #if UNITY_EDITOR
+            gameObject.name = $"Cell ({cell.Coordinates})";
+            #endif
         }
 
-        private void SetWallVisuals()
+        private void SetWallVisuals(Cell cell)
         {
             Material material = new Material(spriteRenderer.material);
-            material.SetInt(northUniform, Cell.HasNorthPassage.ToInt());
-            material.SetInt(southUniform, Cell.HasSouthPassage.ToInt());
-            material.SetInt(eastUniform, Cell.HasEastPassage.ToInt());
-            material.SetInt(westUniform, Cell.HasWestPassage.ToInt());
+            material.SetInt(northUniform, cell.HasNorthPassage.ToInt());
+            material.SetInt(southUniform, cell.HasSouthPassage.ToInt());
+            material.SetInt(eastUniform, cell.HasEastPassage.ToInt());
+            material.SetInt(westUniform, cell.HasWestPassage.ToInt());
             spriteRenderer.material = material;
         }
 
-        private void ToggleIcons()
+        private void TryToggleIcons(CellType cellType)
         {
-            switch (Cell.CellType)
+            switch (cellType)
             {
                 case CellType.START:
                     startIcon.SetActive(true);

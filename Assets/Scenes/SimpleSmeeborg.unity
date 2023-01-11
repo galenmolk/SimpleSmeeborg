@@ -152,14 +152,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 772ae65bbbd104454ac8ce6f62a8ad9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OpenMaterial: {fileID: 0}
-  ClosedMaterial: {fileID: 0}
-  open: []
-  closed: []
-  start: {fileID: 0}
-  end: {fileID: 0}
-  pathPoint: {fileID: 0}
-  Run: 0
 --- !u!4 &470055938
 Transform:
   m_ObjectHideFlags: 0
@@ -246,7 +238,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -453,7 +445,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edeaf6b93d5944d67a9ca85ff000cc16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  invokeMazeInitEvent: 1
   inputAscii: {fileID: 4900000, guid: c88f343b070bc4091942e2e683e1633a, type: 3}
   cellParent: {fileID: 470055938}
   cellPrefab: {fileID: 8389193744280414978, guid: 384c91c4169b34420ac8863b1ea57c5e, type: 3}

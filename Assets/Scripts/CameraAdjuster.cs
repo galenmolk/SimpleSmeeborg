@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace SimpleSmeeborg
 {
+    /// <summary>
+    /// CameraAdjuster moves its Transform to the maze centerpoint.
+    /// It then sets the Camera's size to fit the maze within the viewport.
+    /// </summary>
     [RequireComponent(typeof(Camera))]
     public class CameraAdjuster : MonoBehaviour
     {
@@ -33,7 +37,7 @@ namespace SimpleSmeeborg
         {
             Vector3 cameraPosition = thisTransform.position;
 
-            // Subtract 1 to account for 0-based indexing.
+            // Subtract 1 from both dimensions to account for 0-based indexing.
             cameraPosition.x = (mazeWidth - 1) * 0.5f;
 
             // Use a negative scalar to position 0,0 in the top left. 
@@ -44,7 +48,6 @@ namespace SimpleSmeeborg
         private void SetCameraSize(int mazeWidth, int mazeHeight)
         {
             int largestDimension = Mathf.Max(mazeWidth, mazeHeight);
-
             cam.orthographicSize = largestDimension * 0.5f;
         }
     }

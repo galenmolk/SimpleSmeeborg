@@ -37,9 +37,9 @@ Material:
     - _East: 1
     - _North: 1
     - _South: 1
-    - _WallThickness: 0.1
+    - _WallThickness: 0.05
     - _West: 1
     m_Colors:
-    - _FloorColor: {r: 0.6792453, g: 0.6612717, b: 0.60555357, a: 1}
-    - _WallColor: {r: 0.3207547, g: 0.14519665, b: 0.08926664, a: 1}
+    - _FloorColor: {r: 0.254717, g: 0.254717, b: 0.254717, a: 1}
+    - _WallColor: {r: 0.3186632, g: 0.6664992, b: 0.8773585, a: 1}
   m_BuildTextureStacks: []

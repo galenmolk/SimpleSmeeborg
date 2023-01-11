@@ -1,7 +1,15 @@
-public static class BoolExtensions
+namespace SimpleSmeeborg
 {
-    public static int ToInt(this bool value)
+    public static class BoolExtensions
     {
-        return value ? 1 : 0;
+        /// <summary>
+        /// A readability extension method for standard bool-to-int conversions.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static int ToInt(this bool value)
+        {
+            return value ? 1 : 0;
+        }
     }
 }
