@@ -128,7 +128,7 @@ namespace SimpleSmeeborg
             float fCost = gCost + hCost;
 
             // Update the node costs if one exists -- otherwise, add a new open node.
-            if (!TryUpdateNodeCosts(neighbor, gCost, hCost, fCost, currentNode))
+            if (!TryUpdateNodeCosts(neighbor, gCost, fCost, currentNode))
             {
                 openNodes.Add(new PathNode(neighbor, gCost, fCost, currentNode));
             }
@@ -157,7 +157,7 @@ namespace SimpleSmeeborg
             return false;
         }
 
-        private static bool TryUpdateNodeCosts(Cell neighbor, float g, float h, float f, PathNode parent)
+        private static bool TryUpdateNodeCosts(Cell neighbor, float g, float f, PathNode parent)
         {
             foreach (PathNode node in openNodes)
             {

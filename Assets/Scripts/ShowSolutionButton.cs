@@ -19,6 +19,11 @@ namespace SimpleSmeeborg
             FindPathAStar.OnPathFailed += HandlePathFailed;
         }
 
+        private void OnDestroy()
+        {
+            FindPathAStar.OnPathFailed -= HandlePathFailed;
+        }
+
         private void InvokeOnPressed()
         {
             onPressed?.Invoke();
@@ -26,6 +31,7 @@ namespace SimpleSmeeborg
 
         private void HandlePathFailed()
         {
+            // Hide the UI if no maze solution was found.
             canvas.SetActive(false);
         }
     }
