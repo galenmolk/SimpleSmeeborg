@@ -1,7 +1,5 @@
 # SimpleSmeeborg Documentation
 
-_**[Instructions](https://docs.google.com/document/d/1H8M92RWBqTi0OufbuYja6BzQNnknbib8gbpJHlAts34/edit)**_
-
 ## Overview
 
 This Unity application attempts to parse the contents of a .txt file based on the ASCII maze format provided in the instructions.
