@@ -1,5 +1,4 @@
 # SimpleSmeeborg Documentation
-_Kodable Game Developer Test_
 
 _**[Instructions](https://docs.google.com/document/d/1H8M92RWBqTi0OufbuYja6BzQNnknbib8gbpJHlAts34/edit)**_
 
